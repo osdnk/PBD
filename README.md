@@ -1,6 +1,6 @@
 ## Pre
 https://www.digitalocean.com/community/tutorials/how-to-install-and-use-postgresql-on-ubuntu-14-04
-Follow this tutorial. Even it's writtet for Ubuntu 14.04 LTS, I suppose it's ok for every platform (with small differences like package manager)
+Follow this tutorial. Even it's written for Ubuntu 14.04 LTS, I suppose it's ok for every platform (with small differences like package manager). 
 Let us suppose that you can type 
 ```bash
 sudo -i -u postres
@@ -31,7 +31,7 @@ to leave `psql` and then go to folder with `PBD_create.sql` file. It's a defaul
 ```bash
 psql pbd < PBD_create.sql
 ```
-thenin ordel do connect
+then in order do connect
 ```bash
 psql
 \c pbd 
