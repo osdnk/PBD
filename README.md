@@ -46,3 +46,13 @@ select * from clients;
 ```
 (semicolon!)
 
+# Populate
+TBD. 
+We's rather have to populate in proper order. It would be great if will make FK only to already existing fields :).
+Made example:
+```bash
+psql pbd < populate.sql
+```
+We can make long populaton script. But I think that we could also make it using DataGrip. Just populate it and then make a `bump` of database. And then we could run it on every machine.  
+
+
