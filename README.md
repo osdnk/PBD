@@ -58,7 +58,7 @@ We can make long populaton script. But I think that we could also make it using 
 Oooor, we can use elixir and be fancy and functonal
 
 # Elixir
-Given toy followed tutorial http://elixir-lang.github.io/install.html, let us make it runnable.  
+Given you followed tutorial http://elixir-lang.github.io/install.html, let us make it runnable.  
 In order to get deps
 ```bash
 mix deps.get
@@ -78,11 +78,11 @@ You could do it from file as well
 iex -S mix
 PBD.hello
 ```
-world! Look in `lib/pbd.ex`/ It's so easy
+:world! Look in `lib/pbd.ex`/ It's so easy
 ```
 PBD.example
 ```
-Ok, but if we really wish to compile all this this every time? Maybe some script? `ctr+c` twice
+Ok, but do we really wish to compile all this shit every time? Maybe some script? `ctr+c` twice
 ```
 mix run lib/population
 ```
