@@ -1,7 +1,7 @@
 import List
 defmodule DataGenerator do
   @moduledoc false
-  def generate_dates do
+  def generate_conferences do
     first_date = ~D[2000-01-01]
     r = :rand.uniform(30)
     new_date = Date.add(first_date, r)
@@ -38,4 +38,46 @@ defmodule DataGenerator do
     }
   end
 
+  def generate_privateclients do
+    get_pclients(add_pcdescription(), 10)
+  end
+
+  def get_pclients(l, n) when n < 0 do
+    l
+  end
+
+  def get_pclients(l, n) do
+    inc_list = [add_pcdescription() | l]
+    get_pclients(inc_list, n-1)
+  end
+
+  def add_pcdescription do
+    %{FirstName: Faker.Name.first_name(),
+      LastName: Faker.Name.last_name(),
+      EMail: Faker.Internet.free_email(),
+      Phone: Faker.Phone.EnUs.phone(),
+      Address: Faker.Address.street_address()
+    }
+  end
+
+  def generate_companyclients do
+    get_cclients(add_ccdescription(), 10)
+  end
+
+  def get_cclients(l, n) when n < 0 do
+    l
+  end
+
+  def get_cclients(l, n) do
+    inc_list = [add_ccdescription() | l]
+    get_cclients(inc_list, n-1)
+  end
+
+  def add_ccdescription do
+    %{Name: Faker.Company.name(),
+      EMail: Faker.Internet.free_email(),
+      Phone: Faker.Phone.EnUs.phone(),
+      Address: Faker.Address.street_address()
+    }
+  end
 end
