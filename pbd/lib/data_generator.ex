@@ -22,16 +22,8 @@ defmodule DataGenerator do
     get_dates(inc_list, rem)
   end
 
-  def print_multiple_times(msg, n) when n <= 1 do
-    IO.puts msg
-  end
 
-  def print_multiple_times(msg, n) do
-    IO.puts msg
-    print_multiple_times(msg, n - 1)
-  end
-
-  def add_descrition (date) do
+  def add_description (date) do
     %{date: date,
       name: Faker.App.name(),
       desc: Faker.Company.En.bs()
