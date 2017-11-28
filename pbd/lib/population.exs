@@ -6,9 +6,9 @@ data = Postgrex.query!(pid, "SELECT * FROM conferences", [])
 conferences_dates = generate_conferences()
 conferenes_descriptions = []
 
-private_clients = generate_privateclients()
+private_clients = generate_private_clients()
 
-company_clients = generate_companyclients()
+company_clients = generate_company_clients()
 
 
 
