@@ -5,7 +5,7 @@ defmodule DataGenerator do
     first_date = ~D[2000-01-01]
     r = :rand.uniform(30)
     new_date = Date.add(first_date, r)
-    get_dates([add_descrition(new_date)], 1095)
+    get_dates([add_description(new_date)], 1095)
 
   end
 
@@ -17,7 +17,7 @@ defmodule DataGenerator do
     r = :rand.uniform(30)
     fst = first l
     new_date = Date.add(fst.date, r)
-    inc_list = [add_descrition(new_date) | l]
+    inc_list = [add_description(new_date) | l]
     rem = n - r
     get_dates(inc_list, rem)
   end
@@ -72,4 +72,5 @@ defmodule DataGenerator do
       Address: Faker.Address.street_address()
     }
   end
+
 end
