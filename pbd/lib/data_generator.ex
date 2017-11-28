@@ -72,7 +72,7 @@ defmodule DataGenerator do
       Name: Faker.Company.name(),
       EMail: Faker.Internet.free_email(),
       Phone: Faker.Phone.EnUs.phone(),
-      Address: Fakerer.Address.street_address()
+      Address: Faker.Address.street_address()
     }
   end
 
