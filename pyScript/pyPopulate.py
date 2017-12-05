@@ -11,9 +11,10 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cur = conn.cursor()
 cur.execute("""DELETE FROM conferencedays""")
-print(cur.statusmessage)
 cur.execute("""DELETE FROM conferences""")
-print(cur.statusmessage)
+cur.execute("""DELETE FROM companyclients""")
+cur.execute("""DELETE FROM privateclients""")
+cur.execute("""DELETE FROM clients""")
 
 def create_conferences():
     conferences = []
@@ -24,7 +25,7 @@ def create_conferences():
         conferences.append({
             "date": it_date,
             "len": randint(2, 3),
-            "name": fake.sentence(nb_words=4),
+            "name": fake.sentence(nb_words=3),
             "discount_for_students": randint(0, 90),
             "description": fake.sentence(nb_words=10)
         })
@@ -52,8 +53,7 @@ def create_private_clients():
           "email": fake.email(),
           "phone": fake.phone_number(),
           "address": fake.address(),
-          "client_id": i,
-          "id": i
+          "client_id": i
         })
     return private_clients
 
@@ -62,16 +62,56 @@ def create_company_clients():
     company_clients = []
     for i in range(100):
         company_clients.append({
-            "name": fake.sentence(nb_words=3),
+            "name": fake.sentence(nb_words=1),
             "email": fake.email(),
             "phone": fake.phone_number(),
             "address": fake.address(),
-            "id": i,
             "client_id": i + 100
         })
     return company_clients
 
 
+def add_conference_books():
+    books =[]
+    # todo
+
+
+def add_day_conference_books():
+    books =[]
+    # todo
+
+
+def add_workshop_books():
+    books =[]
+    # todo
+
+
+def create_workshops():
+    wsps =[]
+    # todo
+
+
+def create_participants():
+    pas =[]
+    # todo
+
+
+def add_day_participants():
+    participants = []
+    # todo
+
+
+def add_workshop_participants():
+    participants = []
+    # todo
+
+
+def add_payments():
+    payments =[]
+    # todo
+
+
+# supportive function indexing
 def add_indexes(arr):
     for i in range(len(arr)):
         arr[i]["id"] = i
@@ -96,6 +136,14 @@ for d in days:
                 f"values ({d['id']}, {d['conference_id']}, '{d['date']}', {d['number_of_participants']})")
 
 
+for c in c_clients:
+    cur.execute(f"""INSERT INTO companyclients (companyclientid, name, email, phone, address)""" 
+                f"""VALUES ({c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')""")
 
+for c in p_clients:
+    cur.execute(f"""INSERT INTO privateclients (privateclientid, firstname, lastname, email, phone, address)
+                VALUES ({c['client_id']}, '{c['first_name']}', '{c['last_name']}', 
+                '{c['email']}', '{c['phone']}', '{c['address']}')""")
 
-
+for i in range(200):
+    cur.execute(f"""INSERT INTO clients (clientid) VALUES ({i})""")
