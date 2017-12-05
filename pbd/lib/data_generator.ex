@@ -1,79 +1,99 @@
 import List
 defmodule DataGenerator do
   @moduledoc false
+
+  #conferences
+
   def generate_conferences do
     first_date = ~D[2000-01-01]
     r = :rand.uniform(30)
     new_date = Date.add(first_date, r)
-    get_dates([add_description(new_date)], 1095)
+    get_dates([add_conference_description(new_date, 0)], 1095)
 
   end
 
-  def get_dates(l, n) when n < 0 do
+  defp get_dates(l, n) when n < 0 do
     l
   end
 
-  def get_dates(l, n) do
+  defp get_dates(l, n) do
     r = :rand.uniform(30)
     fst = first l
     new_date = Date.add(fst.date, r)
-    inc_list = [add_description(new_date) | l]
+    inc_list = [add_conference_description(new_date, Kernel.length l) | l]
     rem = n - r
     get_dates(inc_list, rem)
   end
 
 
-  def add_description (date) do
+  defp add_conference_description(date, i) do
     %{
       date: date,
       name: Faker.App.name(),
-      desc: Faker.Company.En.bs()
+      description: Faker.Company.En.bs(),
+      length: :rand.uniform(2)+1,
+      discount: :rand.uniform(100)-1,
+      id: i
     }
   end
 
+  # private clients
+
   def generate_private_clients do
-    get_private_clients(add_private_client_description(), 10)
+    {get_private_clients(get_private_client_description(0), 99), 99}
   end
 
-  def get_private_clients(l, n) when n < 0 do
+  defp get_private_clients(l, n) when n < 0 do
     l
   end
 
-  def get_private_clients(l, n) do
-    inc_list = [add_private_client_description() | l]
+  defp get_private_clients(l, n) do
+    inc_list = [get_private_client_description(n-1) | l]
     get_private_clients(inc_list, n - 1)
   end
 
-  def add_private_client_description do
+  defp get_private_client_description(i) do
     %{
-      FirstName: Faker.Name.first_name(),
-      LastName: Faker.Name.last_name(),
-      EMail: Faker.Internet.free_email(),
-      Phone: Faker.Phone.EnUs.phone(),
-      Address: Faker.Address.street_address()
+      first_name: Faker.Name.first_name(),
+      last_name: Faker.Name.last_name(),
+      email: Faker.Internet.free_email(),
+      phone: Faker.Phone.EnUs.phone(),
+      address: Faker.Address.street_address(),
+      id: i,
+      client_id: i
     }
   end
 
-  def generate_company_clients do
-    get_company_clients(add_company_client_description(), 10)
+  # company clients
+
+  def generate_company_clients(start_id) do
+    {get_company_clients(get_company_client_description(99, start_id), 99, start_id), 99+start_id}
   end
 
-  def get_company_clients(l, n) when n < 0 do
+  defp get_company_clients(l, n, s_i) when n < 0 do
     l
   end
 
-  def get_company_clients(l, n) do
-    inc_list = [add_company_client_description() | l]
-    get_company_clients(inc_list, n - 1)
+  defp get_company_clients(l, n, s_i) do
+    inc_list = [get_company_client_description(n-1, s_i) | l]
+    get_company_clients(inc_list, n - 1, s_i)
   end
 
-  def add_company_client_description do
+  defp get_company_client_description(i, s_i) do
     %{
-      Name: Faker.Company.name(),
-      EMail: Faker.Internet.free_email(),
-      Phone: Faker.Phone.EnUs.phone(),
-      Address: Faker.Address.street_address()
+      name: Faker.Company.name(),
+      email: Faker.Internet.free_email(),
+      phone: Faker.Phone.EnUs.phone(),
+      address: Faker.Address.street_address(),
+      id: i,
+      client_id: i+s_i
     }
-  end
+    end
+
+
+
+
+
+
 
 end
