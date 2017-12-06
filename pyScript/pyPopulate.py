@@ -10,12 +10,14 @@ conn = psycopg2.connect(
 )
 conn.autocommit = True
 cur = conn.cursor()
+cur.execute("""DELETE FROM workshops""")
 cur.execute("""DELETE FROM conferencedays""")
 cur.execute("""DELETE FROM conferences""")
 cur.execute("""DELETE FROM companyclients""")
 cur.execute("""DELETE FROM privateclients""")
 cur.execute("""DELETE FROM clients""")
 cur.execute("""ALTER SEQUENCE clients_clientid_seq RESTART""")
+cur.execute("""ALTER SEQUENCE conferencedays_conferencedayid_seq RESTART""")
 
 def create_conferences():
     conferences = []
@@ -85,9 +87,18 @@ def add_workshop_books():
     # todo
 
 
-def create_workshops():
+def create_workshops(days):
     wsps =[]
-    # todo
+    for d in days:
+        for i in range(randint(0, 10)):
+            wsps.append({
+                "conference_day_id": d["id"],
+                "name": fake.sentence(nb_words=3),
+                "time": fake.time(pattern="%H:%M", end_datetime=None),
+                "cost": randint(10, 20),
+                "number_of_participants": randint(5, 25),
+            })
+    return wsps
 
 
 def create_participants():
@@ -120,6 +131,8 @@ confs = create_conferences()
 add_indexes(confs)
 days = add_days_to_conferences(confs)
 add_indexes(days)
+wsps = create_workshops(days)
+add_indexes(wsps)
 p_clients = create_private_clients()
 c_clients = create_company_clients()
 
@@ -133,6 +146,10 @@ for c in confs:
 for d in days:
     cur.execute(f"insert into conferencedays (conferencedayid, conferences_conferenceid, date, numberofparticipants) "
                 f"values ({d['id']}, {d['conference_id']}, '{d['date']}', {d['number_of_participants']})")
+
+for w in wsps:
+    cur.execute(f"insert into workshops (workshopid, conferencedays_conferencedaysid, name, time, cost, numberofparticipants) "
+                f"values ({w['id']}, {w['conference_day_id']}, '{w['name']}', '{w['time']}', '{w['cost']}', {w['number_of_participants']})")
 
 
 for c in c_clients:

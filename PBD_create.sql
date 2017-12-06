@@ -4,7 +4,7 @@
 -- tables
 -- Table: Clients
 CREATE TABLE Clients (
-    ClientID serial  NOT NULL,
+    ClientID SERIAL  NOT NULL,
     CONSTRAINT Clients_pk PRIMARY KEY (ClientID)
 );
 
@@ -20,7 +20,7 @@ CREATE TABLE CompanyClients (
 
 -- Table: ConferenceBookID
 CREATE TABLE ConferenceBookID (
-    ConferenceBookID int  NOT NULL,
+    ConferenceBookID SERIAL  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
     BookTime date  NOT NULL,
     Clients_ClientID int  NOT NULL,
@@ -29,7 +29,7 @@ CREATE TABLE ConferenceBookID (
 
 -- Table: ConferenceCosts
 CREATE TABLE ConferenceCosts (
-    ConferenceCostID int  NOT NULL,
+    ConferenceCostID SERIAL  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
     Cost decimal(18,2)  NOT NULL,
     DataForm date  NOT NULL,
@@ -39,7 +39,7 @@ CREATE TABLE ConferenceCosts (
 
 -- Table: ConferenceDayBook
 CREATE TABLE ConferenceDayBook (
-    ConferenceDayBookID int  NOT NULL,
+    ConferenceDayBookID SERIAL  NOT NULL,
     ConferenceDays_ConferenceDaysID int  NOT NULL,
     ConferenceBookID_ConferenceBookID int  NOT NULL,
     ParticipantsNumber int  NOT NULL,
@@ -49,7 +49,7 @@ CREATE TABLE ConferenceDayBook (
 
 -- Table: ConferenceDays
 CREATE TABLE ConferenceDays (
-    ConferenceDayID int  NOT NULL,
+    ConferenceDayID SERIAL  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
     Date date  NOT NULL,
     NumberOfParticipants int  NOT NULL,
@@ -58,7 +58,7 @@ CREATE TABLE ConferenceDays (
 
 -- Table: Conferences
 CREATE TABLE Conferences (
-    ConferenceID int  NOT NULL,
+    ConferenceID SERIAL  NOT NULL,
     Name varchar(50)  NOT NULL,
     DiscountForStudents float  NOT NULL,
     Description varchar(200)  NOT NULL,
@@ -67,7 +67,7 @@ CREATE TABLE Conferences (
 
 -- Table: DayParticipants
 CREATE TABLE DayParticipants (
-    DayParticipantID int  NOT NULL,
+    DayParticipantID SERIAL  NOT NULL,
     ConferenceDayBook_ConferenceDayBookID int  NOT NULL,
     Participants_ParticipantID int  NOT NULL,
     StudentID varchar(50)  NULL,
@@ -76,7 +76,7 @@ CREATE TABLE DayParticipants (
 
 -- Table: Participants
 CREATE TABLE Participants (
-    ParticipantID int  NOT NULL,
+    ParticipantID SERIAL  NOT NULL,
     FirstName varchar(50)  NOT NULL,
     LastName varchar(50)  NOT NULL,
     CONSTRAINT Participants_pk PRIMARY KEY (ParticipantID)
@@ -84,7 +84,7 @@ CREATE TABLE Participants (
 
 -- Table: Payments
 CREATE TABLE Payments (
-    PaymentID int  NOT NULL,
+    PaymentID SERIAL  NOT NULL,
     ConferenceBookID_ConferenceBookID int  NOT NULL,
     Value decimal(18,2)  NOT NULL,
     PayTime date  NOT NULL,
@@ -104,7 +104,7 @@ CREATE TABLE PrivateClients (
 
 -- Table: WorkshopBook
 CREATE TABLE WorkshopBook (
-    WorkshopBookID int  NOT NULL,
+    WorkshopBookID SERIAL  NOT NULL,
     Workshops_WorkshopID int  NOT NULL,
     ConferenceDayBook_ConferenceDayBookID int  NOT NULL,
     ParticipantNumber int  NOT NULL,
@@ -113,7 +113,7 @@ CREATE TABLE WorkshopBook (
 
 -- Table: WorkshopParticipants
 CREATE TABLE WorkshopParticipants (
-    WorkshopParticipantID int  NOT NULL,
+    WorkshopParticipantID SERIAL  NOT NULL,
     WorkshopBook_WorkshopBookID int  NOT NULL,
     DayParticipants_DayParticipantID int  NOT NULL,
     CONSTRAINT WorkshopParticipants_pk PRIMARY KEY (WorkshopParticipantID)
@@ -121,7 +121,7 @@ CREATE TABLE WorkshopParticipants (
 
 -- Table: Workshops
 CREATE TABLE Workshops (
-    WorkshopID int  NOT NULL,
+    WorkshopID SERIAL  NOT NULL,
     ConferenceDays_ConferenceDaysID int  NOT NULL,
     Name varchar(50)  NOT NULL,
     Time time  NOT NULL,
