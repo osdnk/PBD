@@ -15,6 +15,7 @@ cur.execute("""DELETE FROM conferences""")
 cur.execute("""DELETE FROM companyclients""")
 cur.execute("""DELETE FROM privateclients""")
 cur.execute("""DELETE FROM clients""")
+cur.execute("""ALTER SEQUENCE clients_clientid_seq RESTART""")
 
 def create_conferences():
     conferences = []
@@ -53,7 +54,6 @@ def create_private_clients():
           "email": fake.email(),
           "phone": fake.phone_number(),
           "address": fake.address(),
-          "client_id": i
         })
     return private_clients
 
@@ -66,7 +66,6 @@ def create_company_clients():
             "email": fake.email(),
             "phone": fake.phone_number(),
             "address": fake.address(),
-            "client_id": i + 100
         })
     return company_clients
 
@@ -137,13 +136,18 @@ for d in days:
 
 
 for c in c_clients:
-    cur.execute(f"""INSERT INTO companyclients (companyclientid, name, email, phone, address)""" 
-                f"""VALUES ({c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')""")
+    cur.execute(f"""INSERT INTO clients DEFAULT VALUES RETURNING clientid""")
+    ind = cur.fetchone()[0]
+    cur.execute(f"""INSERT INTO companyclients (clients_clientid, name, email, phone, address)""" 
+                f"""VALUES ({ind}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')""")
+
 
 for c in p_clients:
-    cur.execute(f"""INSERT INTO privateclients (privateclientid, firstname, lastname, email, phone, address)
-                VALUES ({c['client_id']}, '{c['first_name']}', '{c['last_name']}', 
+    cur.execute(f"""INSERT INTO clients DEFAULT VALUES RETURNING clientid""")
+    ind = cur.fetchone()[0]
+    cur.execute(f"""INSERT INTO privateclients (clients_clientid, firstname, lastname, email, phone, address)
+                VALUES ({ind}, '{c['first_name']}', '{c['last_name']}',
                 '{c['email']}', '{c['phone']}', '{c['address']}')""")
-
-for i in range(200):
-    cur.execute(f"""INSERT INTO clients (clientid) VALUES ({i})""")
+#
+# for i in range(200):
+#     cur.execute(f"""INSERT INTO clients (clientid) VALUES ({i})""")
