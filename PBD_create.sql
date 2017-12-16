@@ -1,5 +1,5 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2017-12-16 15:35:03.53
+-- Last modification date: 2017-12-16 16:39:34.592
 
 -- tables
 -- Table: Clients
@@ -126,7 +126,8 @@ CREATE TABLE Workshops (
     WorkshopID int  NOT NULL,
     ConferenceDays_ConferenceDaysID int  NOT NULL,
     Name varchar(50)  NOT NULL,
-    Time time  NOT NULL,
+    TimeStart time  NOT NULL,
+    TimeEnd time  NOT NULL,
     Cost decimal(18,2)  NOT NULL,
     NumberOfParticipants int  NOT NULL,
     CONSTRAINT Workshops_pk PRIMARY KEY (WorkshopID)

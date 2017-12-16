@@ -10,6 +10,10 @@ conn = psycopg2.connect(
 )
 conn.autocommit = True
 cur = conn.cursor()
+
+
+cur.execute("DELETE FROM conferencedaybook")
+cur.execute("DELETE FROM workshops")
 cur.execute("DELETE FROM conferencecosts")
 cur.execute("DELETE FROM conferencebooks")
 cur.execute("DELETE FROM conferencedays")
@@ -17,6 +21,7 @@ cur.execute("DELETE FROM conferences")
 cur.execute("DELETE FROM companyclients")
 cur.execute("DELETE FROM privateclients")
 cur.execute("DELETE FROM clients")
+
 
 def create_conferences():
     conferences = []
@@ -73,10 +78,10 @@ def create_company_clients():
     return company_clients
 
 
-def add_conference_books():
+def add_conference_books(confs):
     books = []
     for c in confs:
-        no_books=randint(150, 250)
+        no_books=randint(80, 120)
         for _ in range(no_books):
             book = {
                 "booktime": c["date"]-datetime.timedelta(randint(10, 30)),
@@ -87,7 +92,7 @@ def add_conference_books():
     return books
 
 
-def add_conference_costs():
+def add_conference_costs(confs):
     costs = []
     for c in confs:
         no_costs = randint(1, 3)
@@ -100,15 +105,33 @@ def add_conference_costs():
                 "from": c["date"] - datetime.timedelta(days[d]-1),
                 "to": c["date"] - datetime.timedelta(days[d+1]),
                 "conference_id": c["id"],
-                "cost": randint(10000, 30000)/100
+                "cost": randint(10000*d, 10000+10000*d)/100
             }
             costs.append(cost);
     return costs
 
 
-def add_day_conference_books():
-    books =[]
-    # todo
+def add_day_conference_books(books, days):
+    print(books)
+    d_books = []
+    for d in days:
+        con = d["conference_id"]
+        act_books = list(filter(lambda i: i["conference_id"] == con, books))
+        parAm = d["number_of_participants"]
+        for b in act_books:
+            participants = randint(0, min(5, parAm))
+            parAm -= participants
+            if participants != 0:
+                students = randint(0, participants)
+                participants -= students
+                d_book={
+                    "conference_day_id": d["id"],
+                    "book_id": b["id"],
+                    "participants": participants,
+                    "student_participants": students
+                }
+                d_books.append(d_book)
+    return d_books
 
 
 def add_workshop_books():
@@ -118,7 +141,25 @@ def add_workshop_books():
 
 def create_workshops():
     wsps =[]
-    # todo
+    for d in days:
+        no_wsps = randint(3, 10)
+        price = randint(0, 1)
+        if price == 1:
+            price = randint(100, 10000)/100
+        time = datetime.time(randint(8, 16), randint(0, 5)*10)
+        for _ in range(no_wsps):
+            wsp = {
+                "conference_id": d["conference_id"],
+                "name": fake.sentence(nb_words=2),
+                "start_time": time,
+                "end_time": (datetime.datetime.combine(datetime.date.today(), time) + datetime.timedelta(minutes=randint(3, 20)*10)).time(),
+                "cost": price,
+                "number_of_participants": randint(5, 30)
+            }
+            wsps.append(wsp)
+    return wsps
+
+
 
 
 def create_participants():
@@ -154,11 +195,14 @@ days = add_days_to_conferences(confs)
 add_indexes(days)
 p_clients = create_private_clients()
 c_clients = create_company_clients()
-books = add_conference_books()
+books = add_conference_books(confs)
 add_indexes(books)
-costs = add_conference_costs()
+costs = add_conference_costs(confs)
 add_indexes(costs)
-
+workshops = create_workshops()
+add_indexes(workshops)
+d_books = add_day_conference_books(books, days)
+add_indexes(d_books)
 
 
 # inserting
@@ -190,3 +234,10 @@ for c in costs:
     cur.execute(f"INSERT INTO conferencecosts (conferencecostid, conferences_conferenceid, cost, dataform, datato) VALUES "
                 f"('{c['id']}', '{c['conference_id']}', '{c['cost']}', '{c['from']}', '{c['to']}')")
 
+for w in workshops:
+    cur.execute(f"INSERT INTO workshops (workshopid, conferencedays_conferencedaysid, name, timestart, timeend, cost, numberofparticipants) VALUES "
+                f"('{w['id']}', '{w['conference_id']}', '{w['name']}', '{w['start_time']}', '{w['end_time']}', '{w['cost']}', '{w['number_of_participants']}')")
+
+for d in d_books:
+    cur.execute(f"INSERT INTO conferencedaybook (conferencedaybookid, conferencedays_conferencedaysid, conferencebookid_conferencebookid, participantsnumber, studentparticipantsnumber) VALUES "
+                f"('{d['id']}', '{d['conference_day_id']}', '{d['book_id']}', '{d['participants']}', '{d['student_participants']}')")
