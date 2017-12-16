@@ -10,12 +10,13 @@ conn = psycopg2.connect(
 )
 conn.autocommit = True
 cur = conn.cursor()
-cur.execute("""DELETE FROM conferencedays""")
-cur.execute("""DELETE FROM conferences""")
-cur.execute("""DELETE FROM companyclients""")
-cur.execute("""DELETE FROM privateclients""")
-cur.execute("""DELETE FROM clients""")
-cur.execute("""DELETE FROM conferencebooks""")
+cur.execute("DELETE FROM conferencecosts")
+cur.execute("DELETE FROM conferencebooks")
+cur.execute("DELETE FROM conferencedays")
+cur.execute("DELETE FROM conferences")
+cur.execute("DELETE FROM companyclients")
+cur.execute("DELETE FROM privateclients")
+cur.execute("DELETE FROM clients")
 
 def create_conferences():
     conferences = []
@@ -86,6 +87,25 @@ def add_conference_books():
     return books
 
 
+def add_conference_costs():
+    costs = []
+    for c in confs:
+        no_costs = randint(1, 3)
+        days = [randint(100, 150)]
+        for _ in range(no_costs-1):
+            days.append(randint(20, 40))
+        days.append(0)
+        for d in range(len(days)-1):
+            cost = {
+                "from": c["date"] - datetime.timedelta(days[d]-1),
+                "to": c["date"] - datetime.timedelta(days[d+1]),
+                "conference_id": c["id"],
+                "cost": randint(10000, 30000)/100
+            }
+            costs.append(cost);
+    return costs
+
+
 def add_day_conference_books():
     books =[]
     # todo
@@ -118,6 +138,7 @@ def add_workshop_participants():
 
 def add_payments():
     payments =[]
+
     # todo
 
 
@@ -135,6 +156,9 @@ p_clients = create_private_clients()
 c_clients = create_company_clients()
 books = add_conference_books()
 add_indexes(books)
+costs = add_conference_costs()
+add_indexes(costs)
+
 
 
 # inserting
@@ -148,18 +172,21 @@ for d in days:
                 f"values ({d['id']}, {d['conference_id']}, '{d['date']}', {d['number_of_participants']})")
 
 for i in range(200):
-    cur.execute(f"""INSERT INTO clients (clientid) VALUES ({i})""")
+    cur.execute(f"INSERT INTO clients (clientid) VALUES ({i})")
 
 
 for c in c_clients:
-    cur.execute(f"""INSERT INTO companyclients (companyclientid, clients_clientid, name, email, phone, address)""" 
-                f"""VALUES ({c['client_id']+100}, {c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')""")
+    cur.execute(f"INSERT INTO companyclients (companyclientid, clients_clientid, name, email, phone, address)" 
+                f"VALUES ({c['client_id']+100}, {c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')")
 
 for c in p_clients:
-    cur.execute(f"""INSERT INTO privateclients (privateclientid, clients_clientid, firstname, lastname, email, phone, address)
-                VALUES ({c['client_id']}, {c['client_id']}, '{c['first_name']}', '{c['last_name']}', 
-                '{c['email']}', '{c['phone']}', '{c['address']}')""")
+    cur.execute(f"INSERT INTO privateclients (privateclientid, clients_clientid, firstname, lastname, email, phone, address) "
+                f"VALUES ({c['client_id']}, {c['client_id']}, '{c['first_name']}', '{c['last_name']}', '{c['email']}', '{c['phone']}', '{c['address']}')")
 for b in books:
     cur.execute(f"INSERT INTO conferencebooks (conferencebookid, conferences_conferenceid, clients_clientid, booktime) VALUES "
                 f"('{b['id']}', '{b['conference_id']}', '{b['client_id']}', '{b['booktime']}')")
+
+for c in costs:
+    cur.execute(f"INSERT INTO conferencecosts (conferencecostid, conferences_conferenceid, cost, dataform, datato) VALUES "
+                f"('{c['id']}', '{c['conference_id']}', '{c['cost']}', '{c['from']}', '{c['to']}')")
 
