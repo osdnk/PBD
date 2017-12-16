@@ -15,6 +15,7 @@ cur.execute("""DELETE FROM conferences""")
 cur.execute("""DELETE FROM companyclients""")
 cur.execute("""DELETE FROM privateclients""")
 cur.execute("""DELETE FROM clients""")
+cur.execute("""DELETE FROM conferencebooks""")
 
 def create_conferences():
     conferences = []
@@ -66,14 +67,23 @@ def create_company_clients():
             "email": fake.email(),
             "phone": fake.phone_number(),
             "address": fake.address(),
-            "client_id": i + 100
+            "client_id": i
         })
     return company_clients
 
 
 def add_conference_books():
-    books =[]
-    # todo
+    books = []
+    for c in confs:
+        no_books=randint(150, 250)
+        for _ in range(no_books):
+            book = {
+                "booktime": c["date"]-datetime.timedelta(randint(10, 30)),
+                "conference_id": c["id"],
+                "client_id": randint(0, 199)
+            }
+            books.append(book)
+    return books
 
 
 def add_day_conference_books():
@@ -123,6 +133,8 @@ days = add_days_to_conferences(confs)
 add_indexes(days)
 p_clients = create_private_clients()
 c_clients = create_company_clients()
+books = add_conference_books()
+add_indexes(books)
 
 
 # inserting
@@ -135,15 +147,19 @@ for d in days:
     cur.execute(f"insert into conferencedays (conferencedayid, conferences_conferenceid, date, numberofparticipants) "
                 f"values ({d['id']}, {d['conference_id']}, '{d['date']}', {d['number_of_participants']})")
 
-
-for c in c_clients:
-    cur.execute(f"""INSERT INTO companyclients (companyclientid, name, email, phone, address)""" 
-                f"""VALUES ({c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')""")
-
-for c in p_clients:
-    cur.execute(f"""INSERT INTO privateclients (privateclientid, firstname, lastname, email, phone, address)
-                VALUES ({c['client_id']}, '{c['first_name']}', '{c['last_name']}', 
-                '{c['email']}', '{c['phone']}', '{c['address']}')""")
-
 for i in range(200):
     cur.execute(f"""INSERT INTO clients (clientid) VALUES ({i})""")
+
+
+for c in c_clients:
+    cur.execute(f"""INSERT INTO companyclients (companyclientid, clients_clientid, name, email, phone, address)""" 
+                f"""VALUES ({c['client_id']+100}, {c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')""")
+
+for c in p_clients:
+    cur.execute(f"""INSERT INTO privateclients (privateclientid, clients_clientid, firstname, lastname, email, phone, address)
+                VALUES ({c['client_id']}, {c['client_id']}, '{c['first_name']}', '{c['last_name']}', 
+                '{c['email']}', '{c['phone']}', '{c['address']}')""")
+for b in books:
+    cur.execute(f"INSERT INTO conferencebooks (conferencebookid, conferences_conferenceid, clients_clientid, booktime) VALUES "
+                f"('{b['id']}', '{b['conference_id']}', '{b['client_id']}', '{b['booktime']}')")
+

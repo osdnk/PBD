@@ -1,18 +1,17 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2017-11-19 12:22:28.928
+-- Last modification date: 2017-12-16 15:35:03.53
 
 -- tables
 -- Table: Clients
 CREATE TABLE Clients (
     ClientID int  NOT NULL,
-    CompanyClients_CompanyClientID int  NULL,
-    PrivateClients_PrivateClientID int  NULL,
     CONSTRAINT Clients_pk PRIMARY KEY (ClientID)
 );
 
 -- Table: CompanyClients
 CREATE TABLE CompanyClients (
     CompanyClientID int  NOT NULL,
+    Clients_ClientID int  NOT NULL,
     Name varchar(20)  NOT NULL,
     EMail varchar(40)  NOT NULL,
     Phone varchar(20)  NOT NULL,
@@ -20,13 +19,13 @@ CREATE TABLE CompanyClients (
     CONSTRAINT CompanyClients_pk PRIMARY KEY (CompanyClientID)
 );
 
--- Table: ConferenceBookID
-CREATE TABLE ConferenceBookID (
+-- Table: ConferenceBooks
+CREATE TABLE ConferenceBooks (
     ConferenceBookID int  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
-    Clients_ClientID int  NOT NULL,
     BookTime date  NOT NULL,
-    CONSTRAINT ConferenceBookID_pk PRIMARY KEY (ConferenceBookID)
+    Clients_ClientID int  NOT NULL,
+    CONSTRAINT ConferenceBooks_pk PRIMARY KEY (ConferenceBookID)
 );
 
 -- Table: ConferenceCosts
@@ -45,6 +44,7 @@ CREATE TABLE ConferenceDayBook (
     ConferenceDays_ConferenceDaysID int  NOT NULL,
     ConferenceBookID_ConferenceBookID int  NOT NULL,
     ParticipantsNumber int  NOT NULL,
+    StudentParticipantsNumber int  NOT NULL,
     CONSTRAINT ConferenceDayBook_pk PRIMARY KEY (ConferenceDayBookID)
 );
 
@@ -71,6 +71,7 @@ CREATE TABLE DayParticipants (
     DayParticipantID int  NOT NULL,
     ConferenceDayBook_ConferenceDayBookID int  NOT NULL,
     Participants_ParticipantID int  NOT NULL,
+    StudentID varchar(50)  NULL,
     CONSTRAINT DayParticipants_pk PRIMARY KEY (DayParticipantID)
 );
 
@@ -79,8 +80,6 @@ CREATE TABLE Participants (
     ParticipantID int  NOT NULL,
     FirstName varchar(50)  NOT NULL,
     LastName varchar(50)  NOT NULL,
-    StudentID varchar(50)  NULL,
-    Clients_ClientID int  NOT NULL,
     CONSTRAINT Participants_pk PRIMARY KEY (ParticipantID)
 );
 
@@ -95,12 +94,13 @@ CREATE TABLE Payments (
 
 -- Table: PrivateClients
 CREATE TABLE PrivateClients (
+    PrivateClientID int  NOT NULL,
+    Clients_ClientID int  NOT NULL,
     FirstName varchar(20)  NOT NULL,
     LastName varchar(20)  NOT NULL,
     EMail varchar(40)  NOT NULL,
     Phone varchar(20)  NOT NULL,
     Address varchar(100)  NOT NULL,
-    PrivateClientID int  NOT NULL,
     CONSTRAINT PrivateClients_pk PRIMARY KEY (PrivateClientID)
 );
 
@@ -133,32 +133,24 @@ CREATE TABLE Workshops (
 );
 
 -- foreign keys
--- Reference: Clients_CompanyClients (table: Clients)
-ALTER TABLE Clients ADD CONSTRAINT Clients_CompanyClients
-    FOREIGN KEY (CompanyClients_CompanyClientID)
-    REFERENCES CompanyClients (CompanyClientID)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: Clients_PrivateClients (table: Clients)
-ALTER TABLE Clients ADD CONSTRAINT Clients_PrivateClients
-    FOREIGN KEY (PrivateClients_PrivateClientID)
-    REFERENCES PrivateClients (PrivateClientID)  
-    NOT DEFERRABLE 
-    INITIALLY IMMEDIATE
-;
-
--- Reference: ConferenceBookID_Clients (table: ConferenceBookID)
-ALTER TABLE ConferenceBookID ADD CONSTRAINT ConferenceBookID_Clients
+-- Reference: CompanyClients_Clients (table: CompanyClients)
+ALTER TABLE CompanyClients ADD CONSTRAINT CompanyClients_Clients
     FOREIGN KEY (Clients_ClientID)
     REFERENCES Clients (ClientID)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
 
--- Reference: ConferenceBookID_Conferences (table: ConferenceBookID)
-ALTER TABLE ConferenceBookID ADD CONSTRAINT ConferenceBookID_Conferences
+-- Reference: ConferenceBookID_Clients (table: ConferenceBooks)
+ALTER TABLE ConferenceBooks ADD CONSTRAINT ConferenceBookID_Clients
+    FOREIGN KEY (Clients_ClientID)
+    REFERENCES Clients (ClientID)  
+    NOT DEFERRABLE 
+    INITIALLY IMMEDIATE
+;
+
+-- Reference: ConferenceBookID_Conferences (table: ConferenceBooks)
+ALTER TABLE ConferenceBooks ADD CONSTRAINT ConferenceBookID_Conferences
     FOREIGN KEY (Conferences_ConferenceID)
     REFERENCES Conferences (ConferenceID)  
     NOT DEFERRABLE 
@@ -168,7 +160,7 @@ ALTER TABLE ConferenceBookID ADD CONSTRAINT ConferenceBookID_Conferences
 -- Reference: ConferenceDayBook_ConferenceBookID (table: ConferenceDayBook)
 ALTER TABLE ConferenceDayBook ADD CONSTRAINT ConferenceDayBook_ConferenceBookID
     FOREIGN KEY (ConferenceBookID_ConferenceBookID)
-    REFERENCES ConferenceBookID (ConferenceBookID)  
+    REFERENCES ConferenceBooks (ConferenceBookID)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
@@ -189,18 +181,18 @@ ALTER TABLE ConferenceDays ADD CONSTRAINT ConferenceDays_Conferences
     INITIALLY IMMEDIATE
 ;
 
--- Reference: Participants_Clients (table: Participants)
-ALTER TABLE Participants ADD CONSTRAINT Participants_Clients
-    FOREIGN KEY (Clients_ClientID)
-    REFERENCES Clients (ClientID)  
+-- Reference: Payments_ConferenceBookID (table: Payments)
+ALTER TABLE Payments ADD CONSTRAINT Payments_ConferenceBookID
+    FOREIGN KEY (ConferenceBookID_ConferenceBookID)
+    REFERENCES ConferenceBooks (ConferenceBookID)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
 
--- Reference: Payments_ConferenceBookID (table: Payments)
-ALTER TABLE Payments ADD CONSTRAINT Payments_ConferenceBookID
-    FOREIGN KEY (ConferenceBookID_ConferenceBookID)
-    REFERENCES ConferenceBookID (ConferenceBookID)  
+-- Reference: PrivateClients_Clients (table: PrivateClients)
+ALTER TABLE PrivateClients ADD CONSTRAINT PrivateClients_Clients
+    FOREIGN KEY (Clients_ClientID)
+    REFERENCES Clients (ClientID)  
     NOT DEFERRABLE 
     INITIALLY IMMEDIATE
 ;
