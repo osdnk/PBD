@@ -182,16 +182,52 @@ def create_workshops():
 
 def create_participants():
     pas =[]
-    # todo
+    for i in range(2000):
+        pa = {
+            "first_name": fake.first_name(),
+            "last_name": fake.last_name(),
+            "participant_id": i
+        }
+        pas.append(pa)
+    return pas
 
 
 def add_day_participants():
-    participants = []
-    # todo
+    day_participants = []
+    n = 0
+    for b in books:
+        day_books = list(filter(lambda i: i["book_id"] == b["id"], d_books))
+        m = 0
+        for d in day_books:
+            i = 0
+            for p in range(d["participants"]):
+                if randint(0,3) == 0 : i+=1
+                day_participant = {
+                    "day_book_id": d["id"],
+                    "participant_id": participants[(n+i+p)%2000]["id"],
+                    "student_id": 0
+                }
+                day_participants.append(day_participant)
+            m = max(m, i+d["participants"])
+        n += m
+        m = 0
+        for d in day_books:
+            i = 0
+            for p in range(d["student_participants"]):
+                if randint(0,3) == 0 : i+=1
+                day_participant = {
+                    "day_book_id": d["id"],
+                    "participant_id": participants[(n+i+p)%2000]["id"],
+                    "student_id": randint(100000,999999)
+                }
+                day_participants.append(day_participant)
+            m = max(m, i+d["student_participants"])
+        n += m
+    return day_participants
 
 
 def add_workshop_participants():
-    participants = []
+    work_participants = []
     # todo
 
 
@@ -243,6 +279,10 @@ workshop_books = add_workshop_books()
 add_indexes(workshop_books)
 book_payment = add_payments()
 add_indexes(book_payment)
+participants = create_participants()
+add_indexes(participants)
+d_participants = add_day_participants()
+add_indexes(d_participants)
 
 
 # inserting
@@ -289,4 +329,16 @@ for w in workshop_books:
 for p in book_payment:
     cur.execute(f"INSERT INTO payments (paymentid, conferencebookid_conferencebookid, value, paytime) VALUES "
                 f"('{p['id']}', '{p['book_id']}', '{p['value']}', '{p['pay_time']}')")
+
+for p in participants:
+    cur.execute(f"INSERT INTO participants (participantid, firstname, lastname)" 
+                f"VALUES ('{p['id']}', '{p['first_name']}', '{p['last_name']}')")
+
+for d in d_participants:
+    if d["student_id"] == 0:
+        cur.execute(f"INSERT INTO dayparticipants (DayParticipantID, ConferenceDayBook_ConferenceDayBookID, Participants_ParticipantID)"
+                    f"VALUES ('{d['id']}', '{d['day_book_id']}', '{d['participant_id']}')")
+    else:
+        cur.execute(f"INSERT INTO dayparticipants (DayParticipantID, ConferenceDayBook_ConferenceDayBookID, Participants_ParticipantID, StudentID)"
+                    f"VALUES ('{d['id']}', '{d['day_book_id']}', '{d['participant_id']}', '{d['student_id']}')")
 
