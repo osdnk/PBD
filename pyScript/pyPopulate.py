@@ -228,7 +228,19 @@ def add_day_participants():
 
 def add_workshop_participants():
     work_participants = []
-    # todo
+    for b in d_books:
+        i = 0
+        w_book = list(filter(lambda i: i["day_book_id"] == b["id"], workshop_books))
+        for w in w_book:
+            d_part = list(filter(lambda i: i["day_book_id"] == b["id"], d_participants))
+            for d in range(w["participants"]):
+                work_participant = {
+                    "workshop_book_id": w["id"],
+                    "day_participant_id": d_part[i%len(d_part)]["id"]
+                }
+                i+=1
+                work_participants.append(work_participant)
+    return work_participants
 
 
 def add_payments():
@@ -283,7 +295,8 @@ participants = create_participants()
 add_indexes(participants)
 d_participants = add_day_participants()
 add_indexes(d_participants)
-
+w_participants = add_workshop_participants()
+add_indexes(w_participants)
 
 # inserting
 for c in confs:
@@ -342,3 +355,6 @@ for d in d_participants:
         cur.execute(f"INSERT INTO dayparticipants (DayParticipantID, ConferenceDayBook_ConferenceDayBookID, Participants_ParticipantID, StudentID)"
                     f"VALUES ('{d['id']}', '{d['day_book_id']}', '{d['participant_id']}', '{d['student_id']}')")
 
+for w in w_participants:
+    cur.execute(f"INSERT INTO workshopparticipants (workshopparticipantid, WorkshopBook_WorkshopBookID, DayParticipants_DayParticipantID)" 
+                f"VALUES ('{w['id']}', '{w['workshop_book_id']}', '{w['day_participant_id']}')")
