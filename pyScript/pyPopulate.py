@@ -11,7 +11,10 @@ conn = psycopg2.connect(
 conn.autocommit = True
 cur = conn.cursor()
 
-
+cur.execute("DELETE FROM workshopparticipants")
+cur.execute("DELETE FROM dayparticipants")
+cur.execute("DELETE FROM participants")
+cur.execute("DELETE FROM payments")
 cur.execute("DELETE FROM workshopbook")
 cur.execute("DELETE FROM conferencedaybook")
 cur.execute("DELETE FROM workshops")
@@ -34,7 +37,7 @@ def create_conferences():
             "date": it_date,
             "len": randint(2, 3),
             "name": fake.sentence(nb_words=3),
-            "discount_for_students": randint(0, 90),
+            "discount": randint(0, 90),
             "description": fake.sentence(nb_words=10)
         })
     return conferences
@@ -194,7 +197,25 @@ def add_workshop_participants():
 
 def add_payments():
     payments =[]
-    # todo
+    for b in books:
+        value = 0
+        con = list(filter(lambda i: i["id"] == b["conference_id"], confs))[0]
+        day_books = list(filter(lambda i: i["book_id"] == b["id"], d_books))
+        c_costs = list(filter(lambda i: i["conference_id"] == con["id"], costs))
+        cost = c_costs[randint(0,len(c_costs)-1)]
+        for d in day_books:
+            w_books = list(filter(lambda i: i["day_book_id"] == d["id"], workshop_books))
+            value += d["participants"]*cost["cost"]+d["student_participants"]*cost["cost"]*(con["discount"]/100)
+            for wb in w_books:
+                work = list(filter(lambda i: i["id"] == wb["workshop_id"], workshops))[0]
+                value += work["cost"] * wb["participants"]
+        payment = {
+            "book_id": b["id"],
+            "value": value,
+            "pay_time": b["booktime"]+datetime.timedelta(randint(0, 7))
+            }
+        payments.append(payment)
+    return payments
 
 
 
@@ -220,13 +241,15 @@ d_books = add_day_conference_books(books, days)
 add_indexes(d_books)
 workshop_books = add_workshop_books()
 add_indexes(workshop_books)
+book_payment = add_payments()
+add_indexes(book_payment)
 
 
 # inserting
 for c in confs:
     cur.execute(f"insert into conferences (conferenceid, name, "
                 f"discountforstudents, description) values ({c['id']}, '{c['name']}', "
-                f"{c['discount_for_students']}, '{c['description']}')")
+                f"{c['discount']}, '{c['description']}')")
 
 for d in days:
     cur.execute(f"insert into conferencedays (conferencedayid, conferences_conferenceid, date, numberofparticipants) "
@@ -262,4 +285,8 @@ for d in d_books:
 for w in workshop_books:
     cur.execute(f"INSERT INTO workshopbook (WorkshopBookID, Workshops_WorkshopID, ConferenceDayBook_ConferenceDayBookID, ParticipantNumber) VALUES "
                 f"('{w['id']}', '{w['workshop_id']}', '{w['day_book_id']}', '{w['participants']}')")
+
+for p in book_payment:
+    cur.execute(f"INSERT INTO payments (paymentid, conferencebookid_conferencebookid, value, paytime) VALUES "
+                f"('{p['id']}', '{p['book_id']}', '{p['value']}', '{p['pay_time']}')")
 
