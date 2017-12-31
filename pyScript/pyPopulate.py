@@ -268,35 +268,35 @@ def add_payments():
 
 
 # supportive function indexing
-def add_indexes(arr):
+def add_primary_keys(arr):
     for i in range(len(arr)):
         arr[i]["id"] = i
 
 
 confs = create_conferences()
-add_indexes(confs)
+add_primary_keys(confs)
 days = add_days_to_conferences(confs)
-add_indexes(days)
+add_primary_keys(days)
 p_clients = create_private_clients()
 c_clients = create_company_clients()
 books = add_conference_books(confs)
-add_indexes(books)
+add_primary_keys(books)
 costs = add_conference_costs(confs)
-add_indexes(costs)
+add_primary_keys(costs)
 workshops = create_workshops()
-add_indexes(workshops)
+add_primary_keys(workshops)
 d_books = add_day_conference_books(books, days)
-add_indexes(d_books)
+add_primary_keys(d_books)
 workshop_books = add_workshop_books()
-add_indexes(workshop_books)
+add_primary_keys(workshop_books)
 book_payment = add_payments()
-add_indexes(book_payment)
+add_primary_keys(book_payment)
 participants = create_participants()
-add_indexes(participants)
+add_primary_keys(participants)
 d_participants = add_day_participants()
-add_indexes(d_participants)
+add_primary_keys(d_participants)
 w_participants = add_workshop_participants()
-add_indexes(w_participants)
+add_primary_keys(w_participants)
 
 # inserting
 for c in confs:
