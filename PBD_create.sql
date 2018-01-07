@@ -1,121 +1,136 @@
 -- Created by Vertabelo (http://vertabelo.com)
--- Last modification date: 2017-12-16 16:39:34.592
+-- Last modification date: 2018-01-07 13:25:50.001
 
 -- tables
 -- Table: Clients
 CREATE TABLE Clients (
-    ClientID int  NOT NULL,
+    ClientID serial  NOT NULL,
     CONSTRAINT Clients_pk PRIMARY KEY (ClientID)
 );
 
 -- Table: CompanyClients
 CREATE TABLE CompanyClients (
-    CompanyClientID int  NOT NULL,
+    CompanyClientID serial  NOT NULL,
     Clients_ClientID int  NOT NULL,
     Name varchar(20)  NOT NULL,
     EMail varchar(40)  NOT NULL,
     Phone varchar(20)  NOT NULL,
     Address varchar(100)  NOT NULL,
+    CONSTRAINT ProperEmail CHECK (EMail ~ '^\S+[@]\S+[.]\S+$') NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT CompanyClients_pk PRIMARY KEY (CompanyClientID)
 );
 
 -- Table: ConferenceBooks
 CREATE TABLE ConferenceBooks (
-    ConferenceBookID int  NOT NULL,
+    ConferenceBookID serial  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
-    BookTime date  NOT NULL,
+    BookTime date  NOT NULL DEFAULT CURRENT_DATE,
     Clients_ClientID int  NOT NULL,
     CONSTRAINT ConferenceBooks_pk PRIMARY KEY (ConferenceBookID)
 );
 
 -- Table: ConferenceCosts
 CREATE TABLE ConferenceCosts (
-    ConferenceCostID int  NOT NULL,
+    ConferenceCostID serial  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
     Cost decimal(18,2)  NOT NULL,
-    DataForm date  NOT NULL,
+    DataFrom date  NOT NULL,
     DataTo date  NOT NULL,
+    CONSTRAINT ProperDayDifferance CHECK (DataFrom <= DataTo) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT NonnegativeCost CHECK (Cost >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT ConferenceCosts_pk PRIMARY KEY (ConferenceCostID)
 );
 
 -- Table: ConferenceDayBook
 CREATE TABLE ConferenceDayBook (
-    ConferenceDayBookID int  NOT NULL,
+    ConferenceDayBookID serial  NOT NULL,
     ConferenceDays_ConferenceDaysID int  NOT NULL,
     ConferenceBookID_ConferenceBookID int  NOT NULL,
     ParticipantsNumber int  NOT NULL,
-    StudentParticipantsNumber int  NOT NULL,
+    StudentParticipantsNumber int  NOT NULL DEFAULT 0,
+    CONSTRAINT PositiveParticipantsNumber CHECK (ParticipantsNumber > 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT NonnegativeNumberOfStudents CHECK (StudentParticipantsNumber >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT ProperNumberOfStudents CHECK (ParticipantsNumber >= StudentParticipantsNumber) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT ConferenceDayBook_pk PRIMARY KEY (ConferenceDayBookID)
 );
 
 -- Table: ConferenceDays
 CREATE TABLE ConferenceDays (
-    ConferenceDayID int  NOT NULL,
+    ConferenceDayID serial  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
     Date date  NOT NULL,
     NumberOfParticipants int  NOT NULL,
+    CONSTRAINT PositiveNumberOfConferenceParticipants CHECK (NumberOfParticipants > 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT ConferenceDays_pk PRIMARY KEY (ConferenceDayID)
 );
 
 -- Table: Conferences
 CREATE TABLE Conferences (
-    ConferenceID int  NOT NULL,
+    ConferenceID serial  NOT NULL,
     Name varchar(50)  NOT NULL,
-    DiscountForStudents float  NOT NULL,
+    DiscountForStudents float  NOT NULL DEFAULT 0,
     Description varchar(200)  NOT NULL,
+    CONSTRAINT ProperDiscount CHECK (DiscountForStudents >= 0 AND DiscountForStudents <= 100) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT ProperDescription CHECK (LENGTH(Description) > 5) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT Conferences_pk PRIMARY KEY (ConferenceID)
 );
 
 -- Table: DayParticipants
 CREATE TABLE DayParticipants (
-    DayParticipantID int  NOT NULL,
+    DayParticipantID serial  NOT NULL,
     ConferenceDayBook_ConferenceDayBookID int  NOT NULL,
     Participants_ParticipantID int  NOT NULL,
-    StudentID varchar(50)  NULL,
+    StudentID varchar(50)  NULL DEFAULT null,
+    CONSTRAINT ProperStudentID CHECK (StudentID ~ '^\d{6}$' OR StudentID IS NULL) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT DayParticipants_pk PRIMARY KEY (DayParticipantID)
 );
 
 -- Table: Participants
 CREATE TABLE Participants (
-    ParticipantID int  NOT NULL,
+    ParticipantID serial  NOT NULL,
     FirstName varchar(50)  NOT NULL,
     LastName varchar(50)  NOT NULL,
+    EMail varchar(40)  NOT NULL,
+    CONSTRAINT ProperEmail CHECK (EMail ~ '^\S+[@]\S+[.]\S+$') NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT Participants_pk PRIMARY KEY (ParticipantID)
 );
 
 -- Table: Payments
 CREATE TABLE Payments (
-    PaymentID int  NOT NULL,
+    PaymentID serial  NOT NULL,
     ConferenceBookID_ConferenceBookID int  NOT NULL,
-    Value decimal(18,2)  NOT NULL,
-    PayTime date  NOT NULL,
+    Amount decimal(18,2)  NOT NULL,
+    PayTime date  NOT NULL DEFAULT CURRENT_DATE,
+    CONSTRAINT NonnegativeValue CHECK (Amount >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT Payments_pk PRIMARY KEY (PaymentID)
 );
 
 -- Table: PrivateClients
 CREATE TABLE PrivateClients (
-    PrivateClientID int  NOT NULL,
+    PrivateClientID serial  NOT NULL,
     Clients_ClientID int  NOT NULL,
     FirstName varchar(20)  NOT NULL,
     LastName varchar(20)  NOT NULL,
     EMail varchar(40)  NOT NULL,
     Phone varchar(20)  NOT NULL,
     Address varchar(100)  NOT NULL,
+    CONSTRAINT ProperEmail CHECK (EMail ~ '^\S+[@]\S+[.]\S+$') NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT PrivateClients_pk PRIMARY KEY (PrivateClientID)
 );
 
 -- Table: WorkshopBook
 CREATE TABLE WorkshopBook (
-    WorkshopBookID int  NOT NULL,
+    WorkshopBookID serial  NOT NULL,
     Workshops_WorkshopID int  NOT NULL,
     ConferenceDayBook_ConferenceDayBookID int  NOT NULL,
     ParticipantNumber int  NOT NULL,
+    CONSTRAINT PositiveWorkshopParticipantsNumber CHECK (ParticipantNumber > 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT WorkshopBook_pk PRIMARY KEY (WorkshopBookID)
 );
 
 -- Table: WorkshopParticipants
 CREATE TABLE WorkshopParticipants (
-    WorkshopParticipantID int  NOT NULL,
+    WorkshopParticipantID serial  NOT NULL,
     WorkshopBook_WorkshopBookID int  NOT NULL,
     DayParticipants_DayParticipantID int  NOT NULL,
     CONSTRAINT WorkshopParticipants_pk PRIMARY KEY (WorkshopParticipantID)
@@ -123,13 +138,16 @@ CREATE TABLE WorkshopParticipants (
 
 -- Table: Workshops
 CREATE TABLE Workshops (
-    WorkshopID int  NOT NULL,
+    WorkshopID serial  NOT NULL,
     ConferenceDays_ConferenceDaysID int  NOT NULL,
     Name varchar(50)  NOT NULL,
     TimeStart time  NOT NULL,
     TimeEnd time  NOT NULL,
-    Cost decimal(18,2)  NOT NULL,
-    NumberOfParticipants int  NOT NULL,
+    Cost decimal(18,2)  NOT NULL DEFAULT 0,
+    NumberOfParticipants int  NOT NULL DEFAULT 30,
+    CONSTRAINT NonnegativeCost CHECK (Cost >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT ProperTimeDifferance CHECK (TimeStart < TimeEnd) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT PosiviteWorkshopParticipants CHECK (NumberOfParticipants > 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT Workshops_pk PRIMARY KEY (WorkshopID)
 );
 
