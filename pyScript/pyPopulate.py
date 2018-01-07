@@ -324,7 +324,7 @@ for b in books:
                 f"('{b['id']}', '{b['conference_id']}', '{b['client_id']}', '{b['booktime']}')")
 
 for c in costs:
-    cur.execute(f"INSERT INTO conferencecosts (conferencecostid, conferences_conferenceid, cost, dataform, datato) VALUES "
+    cur.execute(f"INSERT INTO conferencecosts (conferencecostid, conferences_conferenceid, cost, datafrom, datato) VALUES "
                 f"('{c['id']}', '{c['conference_id']}', '{c['cost']}', '{c['from']}', '{c['to']}')")
 
 for w in workshops:
@@ -340,7 +340,7 @@ for w in workshop_books:
                 f"('{w['id']}', '{w['workshop_id']}', '{w['day_book_id']}', '{w['participants']}')")
 
 for p in book_payment:
-    cur.execute(f"INSERT INTO payments (paymentid, conferencebookid_conferencebookid, value, paytime) VALUES "
+    cur.execute(f"INSERT INTO payments (paymentid, conferencebookid_conferencebookid, amount, paytime) VALUES "
                 f"('{p['id']}', '{p['book_id']}', '{p['value']}', '{p['pay_time']}')")
 
 for p in participants:
