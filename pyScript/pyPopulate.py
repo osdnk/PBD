@@ -104,6 +104,10 @@ def add_conference_costs(confs):
         for _ in range(no_costs-1):
             days.append(randint(20, 40))
         days.append(0)
+        for i in range(len(days - 2)):
+            days[len(days) - 2 - i] += days[len(days) - 1 - i]
+        print(days)
+
         for d in range(len(days)-1):
             cost = {
                 "from": c["date"] - datetime.timedelta(days[d]-1),
