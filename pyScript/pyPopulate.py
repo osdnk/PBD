@@ -130,7 +130,6 @@ def add_day_conference_books(books, days):
             param -= participants
             if participants != 0:
                 students = randint(0, participants)
-                participants -= students
                 d_book={
                     "conference_day_id": d["id"],
                     "book_id": b["id"],
