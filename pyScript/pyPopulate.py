@@ -31,7 +31,7 @@ def create_conferences():
     conferences = []
     days=[]
     it_date = datetime.date(2003, 1,1)
-    while it_date < datetime.date(2003, 3, 1):
+    while it_date < datetime.date(2006, 1, 1):
         it_date += datetime.timedelta(randint(10, 20))
         conferences.append({
             "date": it_date,
@@ -188,7 +188,8 @@ def create_participants():
         pa = {
             "first_name": fake.first_name(),
             "last_name": fake.last_name(),
-            "participant_id": i
+            "participant_id": i,
+            "email": fake.email()
         }
         pas.append(pa)
     return pas
@@ -202,7 +203,7 @@ def add_day_participants():
         m = 0
         for d in day_books:
             i = 0
-            for p in range(d["participants"]):
+            for p in range(d["participants"]-d["student_participants"]):
                 if randint(0,3) == 0 : i+=1
                 day_participant = {
                     "day_book_id": d["id"],
@@ -210,7 +211,7 @@ def add_day_participants():
                     "student_id": 0
                 }
                 day_participants.append(day_participant)
-            m = max(m, i+d["participants"])
+            m = max(m, i+d["participants"]-d["student_participants"])
         n += m
         m = 0
         for d in day_books:
@@ -372,8 +373,8 @@ for p in book_payment:
 
 print("Inserting into participants ...")
 for p in participants:
-    cur.execute(f"INSERT INTO participants (participantid, firstname, lastname)" 
-                f"VALUES ('{p['id']}', '{p['first_name']}', '{p['last_name']}')")
+    cur.execute(f"INSERT INTO participants (participantid, firstname, lastname, email)" 
+                f"VALUES ('{p['id']}', '{p['first_name']}', '{p['last_name']}', '{p['email']}')")
 
 print("Inserting into day participants ...")
 for d in d_participants:
