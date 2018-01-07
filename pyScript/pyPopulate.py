@@ -335,7 +335,7 @@ for i in range(200):
 print("Inserting into company clients ...")
 for c in c_clients:
     cur.execute(f"INSERT INTO companyclients (companyclientid, clients_clientid, name, email, phone, address)" 
-                f"VALUES ({c['client_id']+100}, {c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')")
+                f"VALUES ({c['client_id']}, {c['client_id']+100}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')")
 
 print("Inserting into private clients ...")
 for c in p_clients:

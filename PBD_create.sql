@@ -101,7 +101,7 @@ CREATE TABLE Payments (
     ConferenceBookID_ConferenceBookID int  NOT NULL,
     Amount decimal(18,2)  NOT NULL,
     PayTime date  NOT NULL DEFAULT CURRENT_DATE,
-    CONSTRAINT NonnegativeValue CHECK (Amount >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT PositiveValue CHECK (Amount > 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT Payments_pk PRIMARY KEY (PaymentID)
 );
 
