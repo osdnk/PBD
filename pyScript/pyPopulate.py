@@ -266,7 +266,8 @@ def add_payments():
             "value": value,
             "pay_time": b["booktime"]+datetime.timedelta(randint(0, 7))
             }
-        payments.append(payment)
+        if payment['value']!=0:
+            payments.append(payment)
     return payments
 
 
