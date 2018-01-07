@@ -104,9 +104,9 @@ def add_conference_costs(confs):
         for _ in range(no_costs-1):
             days.append(randint(20, 40))
         days.append(0)
-        for i in range(len(days - 2)):
+        for i in range(len(days)-2):
             days[len(days) - 2 - i] += days[len(days) - 1 - i]
-        print(days)
+        # print(days)
 
         for d in range(len(days)-1):
             cost = {
@@ -120,7 +120,6 @@ def add_conference_costs(confs):
 
 
 def add_day_conference_books(books, days):
-    # print(books)
     d_books = []
     for d in days:
         con = d["conference_id"]
@@ -131,7 +130,6 @@ def add_day_conference_books(books, days):
             param -= participants
             if participants != 0:
                 students = randint(0, participants)
-                participants -= students
                 d_book={
                     "conference_day_id": d["id"],
                     "book_id": b["id"],
@@ -190,7 +188,8 @@ def create_participants():
         pa = {
             "first_name": fake.first_name(),
             "last_name": fake.last_name(),
-            "participant_id": i
+            "participant_id": i,
+            "email": fake.email()
         }
         pas.append(pa)
     return pas
@@ -204,7 +203,7 @@ def add_day_participants():
         m = 0
         for d in day_books:
             i = 0
-            for p in range(d["participants"]):
+            for p in range(d["participants"]-d["student_participants"]):
                 if randint(0,3) == 0 : i+=1
                 day_participant = {
                     "day_book_id": d["id"],
@@ -212,7 +211,7 @@ def add_day_participants():
                     "student_id": 0
                 }
                 day_participants.append(day_participant)
-            m = max(m, i+d["participants"])
+            m = max(m, i+d["participants"]-d["student_participants"])
         n += m
         m = 0
         for d in day_books:
@@ -375,8 +374,8 @@ for p in book_payment:
 
 print("Inserting into participants ...")
 for p in participants:
-    cur.execute(f"INSERT INTO participants (participantid, firstname, lastname)" 
-                f"VALUES ('{p['id']}', '{p['first_name']}', '{p['last_name']}')")
+    cur.execute(f"INSERT INTO participants (participantid, firstname, lastname, email)" 
+                f"VALUES ('{p['id']}', '{p['first_name']}', '{p['last_name']}', '{p['email']}')")
 
 print("Inserting into day participants ...")
 for d in d_participants:
