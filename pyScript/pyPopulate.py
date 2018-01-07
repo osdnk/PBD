@@ -273,80 +273,107 @@ def add_primary_keys(arr):
         arr[i]["id"] = i
 
 
+print("Creating conferences ...")
 confs = create_conferences()
 add_primary_keys(confs)
+print("Adding days of conferences ...")
 days = add_days_to_conferences(confs)
 add_primary_keys(days)
+print("Creating private clinets ...")
 p_clients = create_private_clients()
+print("Creating company clinets ...")
 c_clients = create_company_clients()
+print("Booking conferences ...")
 books = add_conference_books(confs)
 add_primary_keys(books)
+print("Adding conferences costs ...")
 costs = add_conference_costs(confs)
 add_primary_keys(costs)
+print("Creating workshops ...")
 workshops = create_workshops()
 add_primary_keys(workshops)
+print("Booking days of conferences ...")
 d_books = add_day_conference_books(books, days)
 add_primary_keys(d_books)
+print("Booking workshops ...")
 workshop_books = add_workshop_books()
 add_primary_keys(workshop_books)
+print("Paying for books ...")
 book_payment = add_payments()
 add_primary_keys(book_payment)
+print("Creating participants ...")
 participants = create_participants()
 add_primary_keys(participants)
+print("Adding participants to day books ...")
 d_participants = add_day_participants()
 add_primary_keys(d_participants)
+print("Adding participants to workshop books ...")
 w_participants = add_workshop_participants()
 add_primary_keys(w_participants)
 
 # inserting
+print("Inserting into conferences ...")
 for c in confs:
     cur.execute(f"insert into conferences (conferenceid, name, "
                 f"discountforstudents, description) values ({c['id']}, '{c['name']}', "
                 f"{c['discount']}, '{c['description']}')")
 
+print("Inserting into conferences days ...")
 for d in days:
     cur.execute(f"insert into conferencedays (conferencedayid, conferences_conferenceid, date, numberofparticipants) "
                 f"values ({d['id']}, {d['conference_id']}, '{d['date']}', {d['number_of_participants']})")
 
+print("Inserting into clients ...")
 for i in range(200):
     cur.execute(f"INSERT INTO clients (clientid) VALUES ({i})")
 
 
+print("Inserting into company clients ...")
 for c in c_clients:
     cur.execute(f"INSERT INTO companyclients (companyclientid, clients_clientid, name, email, phone, address)" 
                 f"VALUES ({c['client_id']+100}, {c['client_id']}, '{c['name']}', '{c['email']}', '{c['phone']}', '{c['address']}')")
 
+print("Inserting into private clients ...")
 for c in p_clients:
     cur.execute(f"INSERT INTO privateclients (privateclientid, clients_clientid, firstname, lastname, email, phone, address) "
                 f"VALUES ({c['client_id']}, {c['client_id']}, '{c['first_name']}', '{c['last_name']}', '{c['email']}', '{c['phone']}', '{c['address']}')")
+
+print("Inserting into conference books ...")
 for b in books:
     cur.execute(f"INSERT INTO conferencebooks (conferencebookid, conferences_conferenceid, clients_clientid, booktime) VALUES "
                 f"('{b['id']}', '{b['conference_id']}', '{b['client_id']}', '{b['booktime']}')")
 
+print("Inserting into conference costs ...")
 for c in costs:
     cur.execute(f"INSERT INTO conferencecosts (conferencecostid, conferences_conferenceid, cost, datafrom, datato) VALUES "
                 f"('{c['id']}', '{c['conference_id']}', '{c['cost']}', '{c['from']}', '{c['to']}')")
 
+print("Inserting into workshops ...")
 for w in workshops:
     cur.execute(f"INSERT INTO workshops (workshopid, conferencedays_conferencedaysid, name, timestart, timeend, cost, numberofparticipants) VALUES "
                 f"('{w['id']}', '{w['conference_day_id']}', '{w['name']}', '{w['start_time']}', '{w['end_time']}', '{w['cost']}', '{w['number_of_participants']}')")
 
+print("Inserting into conference day books ...")
 for d in d_books:
     cur.execute(f"INSERT INTO conferencedaybook (conferencedaybookid, conferencedays_conferencedaysid, conferencebookid_conferencebookid, participantsnumber, studentparticipantsnumber) VALUES "
                 f"('{d['id']}', '{d['conference_day_id']}', '{d['book_id']}', '{d['participants']}', '{d['student_participants']}')")
 
+print("Inserting into workshop books ...")
 for w in workshop_books:
     cur.execute(f"INSERT INTO workshopbook (WorkshopBookID, Workshops_WorkshopID, ConferenceDayBook_ConferenceDayBookID, ParticipantNumber) VALUES "
                 f"('{w['id']}', '{w['workshop_id']}', '{w['day_book_id']}', '{w['participants']}')")
 
+print("Inserting into payments ...")
 for p in book_payment:
     cur.execute(f"INSERT INTO payments (paymentid, conferencebookid_conferencebookid, amount, paytime) VALUES "
                 f"('{p['id']}', '{p['book_id']}', '{p['value']}', '{p['pay_time']}')")
 
+print("Inserting into participants ...")
 for p in participants:
     cur.execute(f"INSERT INTO participants (participantid, firstname, lastname)" 
                 f"VALUES ('{p['id']}', '{p['first_name']}', '{p['last_name']}')")
 
+print("Inserting into day participants ...")
 for d in d_participants:
     if d["student_id"] == 0:
         cur.execute(f"INSERT INTO dayparticipants (DayParticipantID, ConferenceDayBook_ConferenceDayBookID, Participants_ParticipantID)"
@@ -355,6 +382,7 @@ for d in d_participants:
         cur.execute(f"INSERT INTO dayparticipants (DayParticipantID, ConferenceDayBook_ConferenceDayBookID, Participants_ParticipantID, StudentID)"
                     f"VALUES ('{d['id']}', '{d['day_book_id']}', '{d['participant_id']}', '{d['student_id']}')")
 
+print("Inserting into workshop participants ...")
 for w in w_participants:
     cur.execute(f"INSERT INTO workshopparticipants (workshopparticipantid, WorkshopBook_WorkshopBookID, DayParticipants_DayParticipantID)" 
                 f"VALUES ('{w['id']}', '{w['workshop_book_id']}', '{w['day_participant_id']}')")
