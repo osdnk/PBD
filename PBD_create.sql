@@ -34,8 +34,8 @@ CREATE TABLE ConferenceCosts (
     ConferenceCostID serial  NOT NULL,
     Conferences_ConferenceID int  NOT NULL,
     Cost decimal(18,2)  NOT NULL,
-    DataFrom date  NOT NULL,
-    DataTo date  NOT NULL,
+    DateFrom date  NOT NULL,
+    DateTo date  NOT NULL,
     CONSTRAINT ProperDayDifferance CHECK (DataFrom <= DataTo) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT NonnegativeCost CHECK (Cost >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT ConferenceCosts_pk PRIMARY KEY (ConferenceCostID)
@@ -155,130 +155,129 @@ CREATE TABLE Workshops (
 -- Reference: CompanyClients_Clients (table: CompanyClients)
 ALTER TABLE CompanyClients ADD CONSTRAINT CompanyClients_Clients
     FOREIGN KEY (Clients_ClientID)
-    REFERENCES Clients (ClientID)  
-    NOT DEFERRABLE 
+    REFERENCES Clients (ClientID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: ConferenceBookID_Clients (table: ConferenceBooks)
 ALTER TABLE ConferenceBooks ADD CONSTRAINT ConferenceBookID_Clients
     FOREIGN KEY (Clients_ClientID)
-    REFERENCES Clients (ClientID)  
-    NOT DEFERRABLE 
+    REFERENCES Clients (ClientID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: ConferenceBookID_Conferences (table: ConferenceBooks)
 ALTER TABLE ConferenceBooks ADD CONSTRAINT ConferenceBookID_Conferences
     FOREIGN KEY (Conferences_ConferenceID)
-    REFERENCES Conferences (ConferenceID)  
-    NOT DEFERRABLE 
+    REFERENCES Conferences (ConferenceID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: ConferenceDayBook_ConferenceBookID (table: ConferenceDayBook)
 ALTER TABLE ConferenceDayBook ADD CONSTRAINT ConferenceDayBook_ConferenceBookID
     FOREIGN KEY (ConferenceBookID_ConferenceBookID)
-    REFERENCES ConferenceBooks (ConferenceBookID)  
-    NOT DEFERRABLE 
+    REFERENCES ConferenceBooks (ConferenceBookID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: ConferenceDayBook_ConferenceDays (table: ConferenceDayBook)
 ALTER TABLE ConferenceDayBook ADD CONSTRAINT ConferenceDayBook_ConferenceDays
     FOREIGN KEY (ConferenceDays_ConferenceDaysID)
-    REFERENCES ConferenceDays (ConferenceDayID)  
-    NOT DEFERRABLE 
+    REFERENCES ConferenceDays (ConferenceDayID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: ConferenceDays_Conferences (table: ConferenceDays)
 ALTER TABLE ConferenceDays ADD CONSTRAINT ConferenceDays_Conferences
     FOREIGN KEY (Conferences_ConferenceID)
-    REFERENCES Conferences (ConferenceID)  
-    NOT DEFERRABLE 
+    REFERENCES Conferences (ConferenceID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Payments_ConferenceBookID (table: Payments)
 ALTER TABLE Payments ADD CONSTRAINT Payments_ConferenceBookID
     FOREIGN KEY (ConferenceBookID_ConferenceBookID)
-    REFERENCES ConferenceBooks (ConferenceBookID)  
-    NOT DEFERRABLE 
+    REFERENCES ConferenceBooks (ConferenceBookID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: PrivateClients_Clients (table: PrivateClients)
 ALTER TABLE PrivateClients ADD CONSTRAINT PrivateClients_Clients
     FOREIGN KEY (Clients_ClientID)
-    REFERENCES Clients (ClientID)  
-    NOT DEFERRABLE 
+    REFERENCES Clients (ClientID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Table_12_ConferenceDayBook (table: DayParticipants)
 ALTER TABLE DayParticipants ADD CONSTRAINT Table_12_ConferenceDayBook
     FOREIGN KEY (ConferenceDayBook_ConferenceDayBookID)
-    REFERENCES ConferenceDayBook (ConferenceDayBookID)  
-    NOT DEFERRABLE 
+    REFERENCES ConferenceDayBook (ConferenceDayBookID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Table_12_Participants (table: DayParticipants)
 ALTER TABLE DayParticipants ADD CONSTRAINT Table_12_Participants
     FOREIGN KEY (Participants_ParticipantID)
-    REFERENCES Participants (ParticipantID)  
-    NOT DEFERRABLE 
+    REFERENCES Participants (ParticipantID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Table_6_Conferences (table: ConferenceCosts)
 ALTER TABLE ConferenceCosts ADD CONSTRAINT Table_6_Conferences
     FOREIGN KEY (Conferences_ConferenceID)
-    REFERENCES Conferences (ConferenceID)  
-    NOT DEFERRABLE 
+    REFERENCES Conferences (ConferenceID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: WorkshopBook_ConferenceDayBook (table: WorkshopBook)
 ALTER TABLE WorkshopBook ADD CONSTRAINT WorkshopBook_ConferenceDayBook
     FOREIGN KEY (ConferenceDayBook_ConferenceDayBookID)
-    REFERENCES ConferenceDayBook (ConferenceDayBookID)  
-    NOT DEFERRABLE 
+    REFERENCES ConferenceDayBook (ConferenceDayBookID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: WorkshopBook_Workshops (table: WorkshopBook)
 ALTER TABLE WorkshopBook ADD CONSTRAINT WorkshopBook_Workshops
     FOREIGN KEY (Workshops_WorkshopID)
-    REFERENCES Workshops (WorkshopID)  
-    NOT DEFERRABLE 
+    REFERENCES Workshops (WorkshopID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: WorkshopParticipants_DayParticipants (table: WorkshopParticipants)
 ALTER TABLE WorkshopParticipants ADD CONSTRAINT WorkshopParticipants_DayParticipants
     FOREIGN KEY (DayParticipants_DayParticipantID)
-    REFERENCES DayParticipants (DayParticipantID)  
-    NOT DEFERRABLE 
+    REFERENCES DayParticipants (DayParticipantID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: WorkshopParticipants_WorkshopBook (table: WorkshopParticipants)
 ALTER TABLE WorkshopParticipants ADD CONSTRAINT WorkshopParticipants_WorkshopBook
     FOREIGN KEY (WorkshopBook_WorkshopBookID)
-    REFERENCES WorkshopBook (WorkshopBookID)  
-    NOT DEFERRABLE 
+    REFERENCES WorkshopBook (WorkshopBookID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- Reference: Workshops_ConferenceDays (table: Workshops)
 ALTER TABLE Workshops ADD CONSTRAINT Workshops_ConferenceDays
     FOREIGN KEY (ConferenceDays_ConferenceDaysID)
-    REFERENCES ConferenceDays (ConferenceDayID)  
-    NOT DEFERRABLE 
+    REFERENCES ConferenceDays (ConferenceDayID)
+    NOT DEFERRABLE
     INITIALLY IMMEDIATE
 ;
 
 -- End of file.
-
