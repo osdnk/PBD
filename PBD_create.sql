@@ -36,7 +36,7 @@ CREATE TABLE ConferenceCosts (
     Cost decimal(18,2)  NOT NULL,
     DateFrom date  NOT NULL,
     DateTo date  NOT NULL,
-    CONSTRAINT ProperDayDifferance CHECK (DataFrom <= DataTo) NOT DEFERRABLE INITIALLY IMMEDIATE,
+    CONSTRAINT ProperDayDifferance CHECK (DateFrom <= DateTo) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT NonnegativeCost CHECK (Cost >= 0) NOT DEFERRABLE INITIALLY IMMEDIATE,
     CONSTRAINT ConferenceCosts_pk PRIMARY KEY (ConferenceCostID)
 );
